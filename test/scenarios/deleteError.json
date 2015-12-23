@@ -1,0 +1,10 @@
+{
+    "OperationResult": {
+        "Errors": [
+            "Object to delete cannot be null"
+        ],
+        "Warnings": [],
+        "_rallyAPIMajor": "2",
+        "_rallyAPIMinor": "0"
+    }
+}

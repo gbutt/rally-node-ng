@@ -1,0 +1,22 @@
+{
+    "OperationResult": {
+        "Errors": [],
+        "Results": [
+            {
+                "Description": "",
+                "Name": "Joe",
+                "ObjectID": 48865734536,
+                "_objectVersion": "1",
+                "_rallyAPIMajor": "2",
+                "_rallyAPIMinor": "0",
+                "_ref": "https://rally1.rallydev.com/slm/webservice/v2.0/task/48865734536",
+                "_refObjectName": "Joe",
+                "_refObjectUUID": "9c7af5ee-bfe0-4e1f-aec5-61b4d4284c69",
+                "_type": "Task"
+            }
+        ],
+        "Warnings": [],
+        "_rallyAPIMajor": "2",
+        "_rallyAPIMinor": "0"
+    }
+}

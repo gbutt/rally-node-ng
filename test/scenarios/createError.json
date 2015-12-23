@@ -1,0 +1,10 @@
+{
+    "CreateResult": {
+        "Errors": [
+            "Validation error: Defect.Name contained invalid input. Search 'HTML Whitelist' at help.rallydev.com for details."
+        ],
+        "Warnings": [],
+        "_rallyAPIMajor": "2",
+        "_rallyAPIMinor": "0"
+    }
+}

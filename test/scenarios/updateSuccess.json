@@ -1,0 +1,20 @@
+{
+    "OperationResult": {
+        "Errors": [],
+        "Object": {
+            "Description": "",
+            "Name": "WWW",
+            "ObjectID": 48861896406,
+            "_objectVersion": "2",
+            "_rallyAPIMajor": "2",
+            "_rallyAPIMinor": "0",
+            "_ref": "https://rally1.rallydev.com/slm/webservice/v2.0/defect/48861896406",
+            "_refObjectName": "WWW",
+            "_refObjectUUID": "76969c6b-87c3-462e-82e3-5c225ad796aa",
+            "_type": "Defect"
+        },
+        "Warnings": [],
+        "_rallyAPIMajor": "2",
+        "_rallyAPIMinor": "0"
+    }
+}

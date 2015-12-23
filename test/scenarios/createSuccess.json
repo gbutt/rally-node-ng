@@ -1,0 +1,19 @@
+{
+    "CreateResult": {
+        "Errors": [],
+        "Object": {
+            "Name": "QQQ",
+            "ObjectID": 48861114390,
+            "_objectVersion": "1",
+            "_rallyAPIMajor": "2",
+            "_rallyAPIMinor": "0",
+            "_ref": "https://rally1.rallydev.com/slm/webservice/v2.0/defect/48861114390",
+            "_refObjectName": "QQQ",
+            "_refObjectUUID": "fa3bdec5-76f8-4083-be0a-764ead36854d",
+            "_type": "Defect"
+        },
+        "Warnings": [],
+        "_rallyAPIMajor": "2",
+        "_rallyAPIMinor": "0"
+    }
+}

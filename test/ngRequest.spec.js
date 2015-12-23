@@ -1,4 +1,4 @@
-var ngRequest = require('ngRequest'),
+var NgRequest = require('ngRequest'),
     _ = require('lodash');
 
 describe('NgRequest', function() {
@@ -10,7 +10,9 @@ describe('NgRequest', function() {
         $httpBackend = _$httpBackend_;
         $timeout = _$timeout_;
 
-        ngRequestBuilder = {init: _.curry(ngRequest.init)(_$http_, $q)};
+        ngRequestBuilder = function(options) {
+            return new NgRequest(_$http_, $q, options);
+        };
     }));
 
     // afterEach(function() {
@@ -19,17 +21,17 @@ describe('NgRequest', function() {
     // });
 
     function createRequest(options) {
-        return ngRequestBuilder.init(_.extend({
+        return ngRequestBuilder(_.extend({
             server: 'https://rally1.rallydev.com',
             apiVersion: 'v2.0'
         }, options));
     }
 
     function createRequestWithApiKey(options) {
-        return ngRequestBuilder.init(_.extend({
+        return ngRequestBuilder(_.extend({
             server: 'https://rally1.rallydev.com',
             apiVersion: 'v2.0',
-            requestOptions: {headers: { zsessionid: 'secret'}}
+            apiKey: 'secret'
         }, options));
     }
 
@@ -44,9 +46,9 @@ describe('NgRequest', function() {
             expect(request.wsapiUrl).toEqual('http://www.acme.com/slm/webservice/v3.0');
         });
 
-        it('should initialize the httpRequest', function() {
+        it('should initialize the http', function() {
             var request = createRequest();
-            expect(request.httpRequest).toBeDefined();
+            expect(request.http).toBeDefined();
         });
 
         it('should initialize the Q', function() {
@@ -55,28 +57,38 @@ describe('NgRequest', function() {
         });
 
         it('should pass headers through', function() {
-            var request = createRequest({requestOptions: {
-                headers: {foo: 'bar', fizz: 'buzz'}
-            }});
-            expect(request.httpRequest.defaults.headers.common.foo).toEqual('bar');
-            expect(request.httpRequest.defaults.headers.common.fizz).toEqual('buzz');
+            var request = createRequest({
+                http: {
+                    defaults: {
+                        headers: {
+                            common: {
+                                foo: 'bar', 
+                                fizz: 'buzz'
+                            }
+                        }
+                    }
+                }
+            });
+            expect(request.http.defaults.headers.common.foo).toEqual('bar');
+            expect(request.http.defaults.headers.common.fizz).toEqual('buzz');
         });
 
         it('should construct Auth header', function() {
             var auth = new Buffer('username:password').toString('base64');
-            var request = createRequest({ requestOptions: {
-                auth: {user: 'username', pass: 'password'} 
-            }});
-            expect(request.httpRequest.defaults.headers.common.Authorization).toEqual('Basic ' + auth);
+            var request = createRequest({ 
+                username: 'username', 
+                password: 'password'
+            });
+            expect(request.http.defaults.headers.common.Authorization).toEqual('Basic ' + auth);
             expect(request._hasKey).toEqual(false);
         });
 
         it('should not construct Auth header is api key provided', function() {
             var auth = new Buffer('username:password').toString('base64');
-            var request = createRequest({ requestOptions: {
-                headers: {zsessionid: 'secret'}
-            }});
-            expect(request.httpRequest.defaults.headers.common.Authorization).not.toBeDefined();
+            var request = createRequest({ 
+                apiKey: 'abc'
+            });
+            expect(request.http.defaults.headers.common.Authorization).not.toBeDefined();
             expect(request._hasKey).toEqual(true);
         });
 
@@ -84,30 +96,30 @@ describe('NgRequest', function() {
             var request = createRequest({ requestOptions: {
                 json: true
             }});
-            expect(request.httpRequest.defaults.headers.common['Content-Type']).toEqual('application/json');
+            expect(request.http.defaults.headers.common['Content-Type']).toEqual('application/json');
         });
 
         it('should have gzip accept encoding header', function() {
             var request = createRequest({ requestOptions: {
                 gzip: true
             }});
-            expect(request.httpRequest.defaults.headers.common['Accept-Encoding']).toEqual('gzip');
+            expect(request.http.defaults.headers.common['Accept-Encoding']).toEqual('gzip');
         });
 
         it('should have withCredentials when cookie jar required', function() {
             var request = createRequest({ requestOptions: {
                 jar: true
             }});
-            expect(request.httpRequest.defaults.withCredentials).toEqual(true);
+            expect(request.http.defaults.withCredentials).toEqual(true);
         });
     });
 
     describe('#httpMethods', function() {
 
-        it('should do secured get requests with params, qs and url querystring', function(done) {
+        it('should do secured get requests with params and url querystring', function(done) {
             var rr = createRequest();
             var data = { Errors: [], Warnings: [], QueryResult: { Results: [] }};
-            rr.get({params: {foo:'bar'}, qs: { beep: 'boop'}, url: '/someUrl?fizz=buzz'})
+            rr.get({params: {foo:'bar'}, url: '/someUrl?fizz=buzz'})
             .then(function(result){
                 expect(result).toEqual(data);
             })
@@ -118,16 +130,16 @@ describe('NgRequest', function() {
 
             $httpBackend.expectGET(rr.wsapiUrl + '/security/authorize')
             .respond({Result: {Errors:[], SecurityToken: 'abc'}});
-            $httpBackend.expectGET(rr.wsapiUrl + '/someUrl?fizz=buzz&beep=boop&foo=bar&key=abc')
+            $httpBackend.expectGET(rr.wsapiUrl + '/someUrl?fizz=buzz&foo=bar&key=abc')
             .respond({Result: data});
             $httpBackend.flush();
 
         });
 
-        it('should do secure post requests with json and data', function(done) {
+        it('should do secure post requests with data', function(done) {
             var rr = createRequest();
             var data = { Errors: [], Warnings: [], QueryResult: { Results: [] }};
-            rr.post({json: {foo:'bar'}, data: {fizz: 'buzz'}, url: '/someUrl'})
+            rr.post({data: {fizz: 'buzz'}, url: '/someUrl'})
             .then(function(result){
                 expect(result).toEqual(data);
             })
@@ -138,16 +150,16 @@ describe('NgRequest', function() {
 
             $httpBackend.expectGET(rr.wsapiUrl + '/security/authorize')
             .respond({Result: {Errors:[], SecurityToken: 'abc'}});
-            $httpBackend.expectPOST(rr.wsapiUrl + '/someUrl', {foo:'bar', fizz: 'buzz', key: 'abc'})
+            $httpBackend.expectPOST(rr.wsapiUrl + '/someUrl', {fizz: 'buzz', key: 'abc'})
             .respond({Result: data});
             $httpBackend.flush();
 
         });
 
-        it('should do secure put requests with json and data', function(done) {
+        it('should do secure put requests with data', function(done) {
             var rr = createRequest();
             var data = { Errors: [], Warnings: [], QueryResult: { Results: [] }};
-            rr.put({json: {foo:'bar'}, data: {fizz: 'buzz'}, url: '/someUrl'})
+            rr.put({data: {fizz: 'buzz'}, url: '/someUrl'})
             .then(function(result){
                 expect(result).toEqual(data);
             })
@@ -158,7 +170,7 @@ describe('NgRequest', function() {
 
             $httpBackend.expectGET(rr.wsapiUrl + '/security/authorize')
             .respond({Result: {Errors:[], SecurityToken: 'abc'}});
-            $httpBackend.expectPUT(rr.wsapiUrl + '/someUrl', {foo:'bar', fizz: 'buzz', key: 'abc'})
+            $httpBackend.expectPUT(rr.wsapiUrl + '/someUrl', {fizz: 'buzz', key: 'abc'})
             .respond({Result: data});
             $httpBackend.flush();
 
@@ -293,7 +305,7 @@ describe('NgRequest', function() {
         it('appends querystring for get operation', function(done) {
             var rr = createRequest();
             var data = {Errors:[], foo: 'bar'};
-            rr.doRequest('get',{url: '/defect', qs: {foo: 'bar'}, params: {fizz: 'buzz'}})
+            rr.doRequest('get',{url: '/defect', params: {fizz: 'buzz'}})
             .then(function(result){
                 expect(result).toEqual(data);
             })
@@ -302,7 +314,7 @@ describe('NgRequest', function() {
             })
             .finally(done);
 
-            $httpBackend.expectGET(rr.wsapiUrl+'/defect?fizz=buzz&foo=bar')
+            $httpBackend.expectGET(rr.wsapiUrl+'/defect?fizz=buzz')
             .respond(200, {Result: data});
             $httpBackend.flush();
         });
@@ -310,7 +322,7 @@ describe('NgRequest', function() {
         it('appends querystring for delete operation', function(done) {
             var rr = createRequest();
             var data = {Errors:[], foo: 'bar'};
-            rr.doRequest('delete',{url: '/defect', qs: {foo: 'bar'}, params: {fizz: 'buzz'}})
+            rr.doRequest('delete',{url: '/defect', params: {fizz: 'buzz'}})
             .then(function(result){
                 expect(result).toEqual(data);
             })
@@ -319,7 +331,7 @@ describe('NgRequest', function() {
             })
             .finally(done);
 
-            $httpBackend.expectDELETE(rr.wsapiUrl+'/defect?fizz=buzz&foo=bar')
+            $httpBackend.expectDELETE(rr.wsapiUrl+'/defect?fizz=buzz')
             .respond(200, {Result: data});
             $httpBackend.flush();
         });
@@ -327,7 +339,7 @@ describe('NgRequest', function() {
         it('appends data', function(done) {
             var rr = createRequest();
             var data = {Errors:[], foo: 'bar'};
-            rr.doRequest('post',{url: '/defect', json: {foo: 'bar'}, data: {fizz: 'buzz'}})
+            rr.doRequest('post',{url: '/defect', data: {fizz: 'buzz'}})
             .then(function(result){
                 expect(result).toEqual(data);
             })
@@ -336,7 +348,7 @@ describe('NgRequest', function() {
             })
             .finally(done);
 
-            $httpBackend.expectPOST(rr.wsapiUrl+'/defect', {foo: 'bar', fizz: 'buzz'})
+            $httpBackend.expectPOST(rr.wsapiUrl+'/defect', {fizz: 'buzz'})
             .respond(200, {Result: data});
             $httpBackend.flush();
         });

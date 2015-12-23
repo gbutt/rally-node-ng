@@ -1,0 +1,37 @@
+{
+    "QueryResult": {
+        "Errors": [],
+        "PageSize": 20,
+        "Results": [
+            {
+                "Description": "If you stand on your head and click this button three times on the stroke of midnight you have a one in three chance of reproducing this bug.",
+                "Name": "I found a bug!",
+                "ObjectID": 44403479318,
+                "_objectVersion": "1",
+                "_rallyAPIMajor": "2",
+                "_rallyAPIMinor": "0",
+                "_ref": "https://rally1.rallydev.com/slm/webservice/v2.0/defect/44403479318",
+                "_refObjectName": "I found a bug!",
+                "_refObjectUUID": "b61f23f8-9c1e-4193-a1da-ca2ff572799f",
+                "_type": "Defect"
+            },
+            {
+                "Description": "",
+                "Name": "QQQ",
+                "ObjectID": 48861896406,
+                "_objectVersion": "1",
+                "_rallyAPIMajor": "2",
+                "_rallyAPIMinor": "0",
+                "_ref": "https://rally1.rallydev.com/slm/webservice/v2.0/defect/48861896406",
+                "_refObjectName": "QQQ",
+                "_refObjectUUID": "76969c6b-87c3-462e-82e3-5c225ad796aa",
+                "_type": "Defect"
+            }
+        ],
+        "StartIndex": 1,
+        "TotalResultCount": 2,
+        "Warnings": [],
+        "_rallyAPIMajor": "2",
+        "_rallyAPIMinor": "0"
+    }
+}

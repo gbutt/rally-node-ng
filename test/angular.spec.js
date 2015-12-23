@@ -24,8 +24,8 @@ describe('#rallyNg', function(){
 
         it('should build proper request object', function() {
             expect(rallyClient.request._hasKey).toEqual(true);
-            expect(rallyClient.request.httpRequest.defaults.withCredentials).not.toBeDefined();
-            var headers = rallyClient.request.httpRequest.defaults.headers.common;
+            expect(rallyClient.request.http.defaults.withCredentials).not.toBeDefined();
+            var headers = rallyClient.request.http.defaults.headers.common;
             expect(headers.Authorization).not.toBeDefined();
             expect(headers.zsessionid).toEqual('abc');
         });
@@ -49,8 +49,8 @@ describe('#rallyNg', function(){
 
         it('should build proper request object', function() {
             expect(rallyClient.request._hasKey).toEqual(false);
-            expect(rallyClient.request.httpRequest.defaults.withCredentials).toBeDefined();
-            var headers = rallyClient.request.httpRequest.defaults.headers.common;
+            expect(rallyClient.request.http.defaults.withCredentials).toBeDefined();
+            var headers = rallyClient.request.http.defaults.headers.common;
             expect(headers.Authorization).toBeDefined();
             expect(headers.zsessionid).not.toBeDefined();
         });
@@ -72,7 +72,7 @@ describe('#rallyNg', function(){
         }));
 
         it('should build proper request object', function() {
-            var headers = rallyClient.request.httpRequest.defaults.headers.common;
+            var headers = rallyClient.request.http.defaults.headers.common;
             expect(headers['Content-Type']).toEqual('application/json');
             expect(headers['Accept-Encoding']).toEqual('gzip');
             expect(rallyClient.request.wsapiUrl).toEqual('https://rally1.rallydev.com/slm/webservice/v2.0');
@@ -88,9 +88,18 @@ describe('#rallyNg', function(){
                     apiKey: 'abc',
                     server: 'http://rally',
                     apiVersion: 'v123',
-                    gzip: false,
-                    json: false,
-                    headers: {foo: 'bar', fizz: 'buzz'},
+                    http: {
+                        defaults: {
+                            headers: {
+                                common: {
+                                    foo: 'bar', 
+                                    fizz: 'buzz',
+                                    'Content-Type': 'text/plain',
+                                    'Accept-Encoding': 'none',
+                                }
+                            }
+                        }
+                    }
                 });
         });
         
@@ -100,9 +109,9 @@ describe('#rallyNg', function(){
         }));
 
         it('should build proper request object', function() {
-            var headers = rallyClient.request.httpRequest.defaults.headers.common;
-            expect(headers['Content-Type']).not.toBeDefined();
-            expect(headers['Accept-Encoding']).not.toBeDefined();
+            var headers = rallyClient.request.http.defaults.headers.common;
+            expect(headers['Content-Type']).toEqual('text/plain');
+            expect(headers['Accept-Encoding']).toEqual('none');
             expect(headers.foo).toEqual('bar');
             expect(headers.fizz).toEqual('buzz');
             expect(rallyClient.request.wsapiUrl).toEqual('http://rally/slm/webservice/v123');

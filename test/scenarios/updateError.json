@@ -1,0 +1,10 @@
+{
+    "OperationResult": {
+        "Errors": [
+            "Could not read: Could not read Defect 9999 to update."
+        ],
+        "Warnings": [],
+        "_rallyAPIMajor": "2",
+        "_rallyAPIMinor": "0"
+    }
+}

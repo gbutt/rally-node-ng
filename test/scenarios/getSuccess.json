@@ -1,0 +1,74 @@
+{
+    "Workspace": {
+        "Children": {
+            "Count": 2,
+            "_rallyAPIMajor": "2",
+            "_rallyAPIMinor": "0",
+            "_ref": "https://rally1.rallydev.com/slm/webservice/v2.0/Workspace/44401157361/Children",
+            "_type": "Project"
+        },
+        "CreationDate": "2015-10-07T22:13:52.408Z",
+        "Description": "",
+        "Errors": [],
+        "Name": "Workspace 1",
+        "Notes": "",
+        "ObjectID": 44401157361,
+        "ObjectUUID": "9912d84c-dce6-46c2-b5dc-7b86361a3280",
+        "Owner": {
+            "_rallyAPIMajor": "2",
+            "_rallyAPIMinor": "0",
+            "_ref": "https://rally1.rallydev.com/slm/webservice/v2.0/user/44401157355",
+            "_refObjectName": "xavierbutt",
+            "_refObjectUUID": "e50dccf9-bb02-44c6-a884-f216e09e183b",
+            "_type": "User"
+        },
+        "Projects": {
+            "Count": 2,
+            "_rallyAPIMajor": "2",
+            "_rallyAPIMinor": "0",
+            "_ref": "https://rally1.rallydev.com/slm/webservice/v2.0/Workspace/44401157361/Projects",
+            "_type": "Project"
+        },
+        "RevisionHistory": {
+            "_rallyAPIMajor": "2",
+            "_rallyAPIMinor": "0",
+            "_ref": "https://rally1.rallydev.com/slm/webservice/v2.0/revisionhistory/44401157362",
+            "_refObjectUUID": "264b49f4-ba43-4430-a551-da1b6335d699",
+            "_type": "RevisionHistory"
+        },
+        "SchemaVersion": "183622324f2506fa3096536d6b8d52c2",
+        "State": "Open",
+        "Style": "UserStory",
+        "Subscription": {
+            "_rallyAPIMajor": "2",
+            "_rallyAPIMinor": "0",
+            "_ref": "https://rally1.rallydev.com/slm/webservice/v2.0/subscription/44401157224",
+            "_refObjectName": "Community (CE2014) Edition - Rally Software Development Corp.",
+            "_refObjectUUID": "5a3765ab-67ad-415e-8d06-94b1c700f396",
+            "_type": "Subscription"
+        },
+        "TypeDefinitions": {
+            "Count": 45,
+            "_rallyAPIMajor": "2",
+            "_rallyAPIMinor": "0",
+            "_ref": "https://rally1.rallydev.com/slm/webservice/v2.0/Workspace/44401157361/TypeDefinitions",
+            "_type": "TypeDefinition"
+        },
+        "VersionId": "3",
+        "Warnings": [],
+        "WorkspaceConfiguration": {
+            "_rallyAPIMajor": "2",
+            "_rallyAPIMinor": "0",
+            "_ref": "https://rally1.rallydev.com/slm/webservice/v2.0/workspaceconfiguration/44401157361",
+            "_refObjectUUID": "09df2f2c-4461-480e-811e-e9ccf32fd1dd",
+            "_type": "WorkspaceConfiguration"
+        },
+        "_CreatedAt": "Oct 7",
+        "_objectVersion": "3",
+        "_rallyAPIMajor": "2",
+        "_rallyAPIMinor": "0",
+        "_ref": "https://rally1.rallydev.com/slm/webservice/v2.0/workspace/44401157361",
+        "_refObjectName": "Workspace 1",
+        "_refObjectUUID": "9912d84c-dce6-46c2-b5dc-7b86361a3280"
+    }
+}
