@@ -36,41 +36,14 @@ describe('#query', function(){
         rallyQueryBuilder = _rallyQueryBuilder_;
     }));
 
-    it('should call the query endpoint with type', function(done){
-
-    	var options = {
-            type: 'defect',
-            scope: {workspace: '/workspace/1234'},
-            fetch: ['FormattedID'],
-            requestOptions: {
-                params: {foo: 'bar'}
-            }
+    it('should call the query endpoint', function(done){
+        var ref = '/defect';
+        var params = {
+        	workspace: '/workspace/1234',
+        	fetch: 'FormattedID',
+        	foo: 'bar'
         };
-    	rallyClient.query(options)
-    	.then(function(result){
-    		expect(result.Results).toEqual(queryResult.QueryResult.Results);
-            expect(result.StartIndex).toEqual(1);
-            expect(result.PageSize).toEqual(1);
-    	})
-    	.finally(done);
-
-    	$httpBackend.expectGET(wsapiUrl + '/defect?fetch=FormattedID&foo=bar&pagesize=200&start=1&workspace=%2Fworkspace%2F1234')
-        .respond(queryResult);
-
-        $httpBackend.flush();
-    });
-
-    it('should call the query endpoint with ref', function(done){
-
-        var options = {
-            ref: '/defect/1234/tasks',
-            scope: {workspace: '/workspace/1234'},
-            fetch: ['FormattedID'],
-            requestOptions: {
-                params: {foo: 'bar'}
-            }
-        };
-        rallyClient.query(options)
+        rallyClient.queryAll(ref, params)
         .then(function(result){
             expect(result.Results).toEqual(queryResult.QueryResult.Results);
             expect(result.StartIndex).toEqual(1);
@@ -78,37 +51,7 @@ describe('#query', function(){
         })
         .finally(done);
 
-        $httpBackend.expectGET(wsapiUrl + '/defect/1234/tasks?fetch=FormattedID&foo=bar&pagesize=200&start=1&workspace=%2Fworkspace%2F1234')
-        .respond(queryResult);
-
-        $httpBackend.flush();
-    });
-
-    it('should call the query endpoint with all options', function(done){
-
-        var options = {
-            type: 'defect',
-            scope: {project: '/project/1234', up:true, down:false},
-            start:10,
-            limit:100,
-            pagesize:20,
-            fetch: ['FormattedID', 'ObjectID'],
-            order: ['ObjectID','FormattedID'],
-            query: rallyQueryBuilder.where('DirectChildrenCount', '>', 0),
-            requestOptions: {
-                params: {foo: 'bar'}
-            }
-        };
-        rallyClient.query(options)
-        .then(function(result){
-            expect(result.Results).toEqual(queryResult.QueryResult.Results);
-            expect(result.StartIndex).toEqual(10);
-            expect(result.PageSize).toEqual(1);
-
-        })
-        .finally(done);
-
-        $httpBackend.expectGET(wsapiUrl + '/defect?fetch=FormattedID,ObjectID&foo=bar&order=ObjectID,FormattedID&pagesize=20&project=%2Fproject%2F1234&projectScopeDown=false&projectScopeUp=true&query=(DirectChildrenCount+%3E+0)&start=10')
+        $httpBackend.expectGET(wsapiUrl + '/defect?fetch=FormattedID&foo=bar&pagesize=100&start=1&workspace=%2Fworkspace%2F1234')
         .respond(queryResult);
 
         $httpBackend.flush();
@@ -142,17 +85,14 @@ describe('#query', function(){
             }
         };
 
-        var options = {
-            type: 'defect',
-            scope: {workspace: '/workspace/1234'},
-            limit:3,
+        var ref = '/defect';
+        var params = {
+        	workspace: '/workspace/1234',
+        	limit:3,
             pagesize:2,
-            fetch: ['FormattedID'],
-            requestOptions: {
-                params: {foo: 'bar'}
-            }
+            fetch: 'FormattedID'
         };
-        rallyClient.query(options)
+        rallyClient.queryAll(ref, params)
         .then(function(result){
             var expectedResults = queryResultPage1.QueryResult.Results.concat(queryResultPage2.QueryResult.Results)
 
@@ -164,15 +104,15 @@ describe('#query', function(){
         })
         .finally(done);
 
-        $httpBackend.expectGET(wsapiUrl + '/defect?fetch=FormattedID&foo=bar&pagesize=2&start=1&workspace=%2Fworkspace%2F1234')
+        $httpBackend.expectGET(wsapiUrl + '/defect?fetch=FormattedID&pagesize=2&start=1&workspace=%2Fworkspace%2F1234')
         .respond(queryResultPage1);
-        $httpBackend.expectGET(wsapiUrl + '/defect?fetch=FormattedID&foo=bar&pagesize=1&start=3&workspace=%2Fworkspace%2F1234')
+        $httpBackend.expectGET(wsapiUrl + '/defect?fetch=FormattedID&pagesize=1&start=3&workspace=%2Fworkspace%2F1234')
         .respond(queryResultPage2);
 
         $httpBackend.flush();
     });
 
-    it('should fetch multiple pages with limit of -1', function(done){
+    it('should fetch all pages without limit', function(done){
 
         var queryResultPage1 = {
             QueryResult: {
@@ -201,17 +141,13 @@ describe('#query', function(){
             }
         };
 
-        var options = {
-            type: 'defect',
-            scope: {workspace: '/workspace/1234'},
-            limit:-1,
+        var ref = '/defect';
+        var params = {
+        	workspace: '/workspace/1234',
             pagesize:2,
-            fetch: ['FormattedID'],
-            requestOptions: {
-                params: {foo: 'bar'}
-            }
+            fetch: 'FormattedID'
         };
-        rallyClient.query(options)
+        rallyClient.queryAll(ref, params)
         .then(function(result){
             var expectedResults = queryResultPage1.QueryResult.Results.concat(queryResultPage2.QueryResult.Results)
 
@@ -223,15 +159,15 @@ describe('#query', function(){
         })
         .finally(done);
 
-        $httpBackend.expectGET(wsapiUrl + '/defect?fetch=FormattedID&foo=bar&pagesize=2&start=1&workspace=%2Fworkspace%2F1234')
+        $httpBackend.expectGET(wsapiUrl + '/defect?fetch=FormattedID&pagesize=2&start=1&workspace=%2Fworkspace%2F1234')
         .respond(queryResultPage1);
-        $httpBackend.expectGET(wsapiUrl + '/defect?fetch=FormattedID&foo=bar&pagesize=2&start=3&workspace=%2Fworkspace%2F1234')
+        $httpBackend.expectGET(wsapiUrl + '/defect?fetch=FormattedID&pagesize=2&start=3&workspace=%2Fworkspace%2F1234')
         .respond(queryResultPage2);
 
         $httpBackend.flush();
     });
 
-    it('should fetch single page without limit', function(done){
+    it('should fetch single page with limit', function(done){
 
         var queryResultPage1 = {
             QueryResult: {
@@ -247,16 +183,13 @@ describe('#query', function(){
             }
         };
 
-        var options = {
-            type: 'defect',
-            scope: {workspace: '/workspace/1234'},
-            pagesize:2,
-            fetch: ['FormattedID'],
-            requestOptions: {
-                params: {foo: 'bar'}
-            }
+        var ref = '/defect';
+        var params = {
+        	workspace: '/workspace/1234',
+            limit:2,
+            fetch: 'FormattedID',
         };
-        rallyClient.query(options)
+        rallyClient.queryAll(ref, params)
         .then(function(result){
             var expectedResults = queryResultPage1.QueryResult.Results;
 
@@ -268,7 +201,7 @@ describe('#query', function(){
         })
         .finally(done);
 
-        $httpBackend.expectGET(wsapiUrl + '/defect?fetch=FormattedID&foo=bar&pagesize=2&start=1&workspace=%2Fworkspace%2F1234')
+        $httpBackend.expectGET(wsapiUrl + '/defect?fetch=FormattedID&pagesize=2&start=1&workspace=%2Fworkspace%2F1234')
         .respond(queryResultPage1);
 
         $httpBackend.flush();
@@ -283,15 +216,12 @@ describe('#query', function(){
             }
         };
 
-        var options = {
-            type: 'defect',
-            scope: {workspace: '/workspace/1234'},
-            fetch: ['FormattedID'],
-            requestOptions: {
-                params: {foo: 'bar'}
-            }
+        var ref = '/defect';
+        var params = {
+        	workspace: '/workspace/1234',
+        	fetch: 'FormattedID'
         };
-        rallyClient.query(options)
+        rallyClient.queryAll(ref, params)
         .then(function(result){
             fail('Should not get result');
         })
@@ -300,7 +230,7 @@ describe('#query', function(){
         })
         .finally(done);
 
-        $httpBackend.expectGET(wsapiUrl + '/defect?fetch=FormattedID&foo=bar&pagesize=200&start=1&workspace=%2Fworkspace%2F1234')
+        $httpBackend.expectGET(wsapiUrl + '/defect?fetch=FormattedID&pagesize=100&start=1&workspace=%2Fworkspace%2F1234')
         .respond(queryResultError);
 
         $httpBackend.flush();

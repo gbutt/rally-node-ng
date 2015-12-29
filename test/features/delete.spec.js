@@ -1,3 +1,4 @@
+require('angular');
 var rallyNg = require('../..'),
 	ngRequest = require('ngRequest'),
     _ = require('lodash');
@@ -31,18 +32,13 @@ describe('#delete', function(){
 
     it('should call the delete endpoint', function(done){
 
-    	var options = {
-    		ref: '/defect/1234',
-            scope: {workspace: '/workspace/1234'},
-    		requestOptions: { params: { fizz: 'buzz' }}
-    	}
-    	rallyClient.delete(options)
+    	rallyClient.delete('/defect/1234')
     	.then(function(result){
     		expect(result).toEqual(deleteResult.OperationResult);
     	})
     	.finally(done);
 
-    	$httpBackend.expectDELETE(wsapiUrl + '/defect/1234?fizz=buzz&workspace=%2Fworkspace%2F1234')
+    	$httpBackend.expectDELETE(wsapiUrl + '/defect/1234')
         .respond(deleteResult);
 
         $httpBackend.flush();

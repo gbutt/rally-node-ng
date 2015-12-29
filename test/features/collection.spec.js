@@ -1,3 +1,4 @@
+require('angular');
 var rallyNg = require('../..'),
 	ngRequest = require('ngRequest'),
     _ = require('lodash');
@@ -43,42 +44,26 @@ describe('#collections', function(){
     }));
 
     it('should call the add collection endpoint', function(done){
-
-    	var options = {
-    		ref: '/defect/123',
-            collection: 'tasks',
-    		data: [{Name: 'bar'}],
-    		scope: {workspace: '/workspace/1234'},
-    		fetch: ['ObjectID','Name']
-    	}
-    	rallyClient.collectionAdd(options)
+    	rallyClient.collectionAdd('/defect/123/tasks', [{Name: 'bar'}])
     	.then(function(result){
     		expect(result).toEqual(addResult.OperationResult);
     	})
     	.finally(done);
 
-    	$httpBackend.expectPOST(wsapiUrl + '/defect/123/tasks/add?fetch=ObjectID,Name&workspace=%2Fworkspace%2F1234', { CollectionItems: [{Name: 'bar'}] })
+    	$httpBackend.expectPOST(wsapiUrl + '/defect/123/tasks/add', { CollectionItems: [{Name: 'bar'}] })
         .respond(addResult);
 
         $httpBackend.flush();
     });
 
     it('should call the remove collection endpoint', function(done){
-
-        var options = {
-            ref: '/defect/123',
-            collection: 'tasks',
-            data: [{_ref: '/task/123'}],
-            scope: {workspace: '/workspace/1234'},
-            fetch: ['ObjectID','Name']
-        }
-        rallyClient.collectionRemove(options)
+        rallyClient.collectionRemove('/defect/123/tasks', [{_ref: '/task/123'}])
         .then(function(result){
             expect(result).toEqual(removeResult.OperationResult);
         })
         .finally(done);
 
-        $httpBackend.expectPOST(wsapiUrl + '/defect/123/tasks/remove?fetch=ObjectID,Name&workspace=%2Fworkspace%2F1234', { CollectionItems: [{_ref: '/task/123'}] })
+        $httpBackend.expectPOST(wsapiUrl + '/defect/123/tasks/remove', { CollectionItems: [{_ref: '/task/123'}] })
         .respond(removeResult);
 
         $httpBackend.flush();

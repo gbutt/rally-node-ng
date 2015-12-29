@@ -1,5 +1,8 @@
-var _ = require('lodash'),
-    format = require('util').format,
+(function(){ 'use strict';
+
+
+var isString = require('../internal/isString'),
+    format = require('../internal/formatString'),
     refUtils = require('./ref');
 /**
  @module Query
@@ -23,14 +26,14 @@ Query.prototype.toQueryString = function() {
     if(right === null) {
         right = 'null';
     } else if(right.toQueryString) {
-        right = right.toQueryString()
+        right = right.toQueryString();
     } else if(refUtils.isRef(right)) {
         right = refUtils.getRelative(right);
-    } else if(_.isString(right) && right.indexOf(' ') >= 0) {
-        right = format('"%s"', right)
+    } else if(isString(right) && right.indexOf(' ') >= 0) {
+        right = format('"{0}"', right);
     }
 
-    return format('(%s %s %s)', left, this.op, right);
+    return format('({0} {1} {2})', left, this.op, right);
 };
 
 Query.prototype.and = function(left, op, right) {
@@ -48,3 +51,5 @@ function where(left, op, right) {
 module.exports = {
     where: where
 };
+
+})();

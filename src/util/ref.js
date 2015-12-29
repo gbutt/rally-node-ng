@@ -1,4 +1,9 @@
-var _ = require('lodash');
+(function(){ 'use strict';
+
+/*jshint maxlen:false*/
+
+var findInArray = require('../internal/findInArray');
+
 /**
  @module Ref
 
@@ -33,12 +38,15 @@ var REF_REGEXES = [
     new RegExp('.*?\\/' + TYPE_REGEX + '\\/' + IDENTITY_REGEX + EXT_REGEX + '?$'),
 
     //permission ref (/workspacepermission/123u456w1)
-    new RegExp('.*?\\/' + TYPE_REGEX + '\\/(' + NON_CAP_IDENTITY_REGEX + 'u' + NON_CAP_IDENTITY_REGEX + '[pw]' + NON_CAP_IDENTITY_REGEX + ')' + EXT_REGEX + '?$')
+    new RegExp('.*?\\/' + TYPE_REGEX + '\\/(' + NON_CAP_IDENTITY_REGEX + 'u' + NON_CAP_IDENTITY_REGEX + '[pw]' + NON_CAP_IDENTITY_REGEX + ')' + EXT_REGEX + '?$'),
 ];
 
-function match(input) {
+//basic collection (/defect)
+var BASIC_COLLECTION_REGEX = new RegExp('.*?\\/' + TYPE_REGEX + EXT_REGEX + '?$');
+
+function match(input, additionalRegexes) {
     input = (input && input._ref) ? input._ref : (input || '');
-    var regexMatch = _.find(REF_REGEXES, function(regex) {
+    var regexMatch = findInArray(REF_REGEXES.concat(additionalRegexes), function(regex) {
         return regex.test(input);
     });
     return (regexMatch && input.match(regexMatch)) || null;
@@ -46,23 +54,25 @@ function match(input) {
 
 var Ref = {
     isRef: function(input) {
-        return !!match(input);
+        return !!match(input, []);
     },
 
     getRelative: function(input) {
-        var refMatch = match(input);
-        return (refMatch && [''].concat(refMatch.slice(1)).join('/')) || null;
+        var refMatch = match(input, [BASIC_COLLECTION_REGEX]);
+        return (refMatch && [''].concat(refMatch.slice(1)).join('/')) || input;
     },
 
     getType: function(input) {
-        var refMatch = match(input);
+        var refMatch = match(input, [BASIC_COLLECTION_REGEX]);
         return (refMatch && refMatch[1]) || null;
     },
 
     getId: function(input) {
-        var refMatch = match(input);
+        var refMatch = match(input, []);
         return (refMatch && refMatch[2]) || null;
     }
 };
 
 module.exports = Ref;
+
+})();

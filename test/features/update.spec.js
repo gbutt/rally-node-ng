@@ -1,5 +1,6 @@
+require('angular');
 var rallyNg = require('../..'),
-	ngRequest = require('ngRequest'),
+    ngRequest = require('ngRequest'),
     _ = require('lodash');
 require('angular-mocks');
 
@@ -34,21 +35,19 @@ describe('#update', function(){
     }));
 
     it('should call the update endpoint', function(done){
-
-    	var options = {
-    		ref: '/defect/123',
-    		data: {foo: 'bar'},
-    		scope: {workspace: '/workspace/1234'},
-    		fetch: ['ObjectID','Name'],
-    		requestOptions: { data: { fizz: 'buzz' }}
-    	}
-    	rallyClient.update(options)
+        var data = {
+            foo: 'bar'
+        }; 
+        var params = { 
+            fetch: ['ObjectID','Name'].join(',') 
+        };
+    	rallyClient.update('/defect/123', data, params)
     	.then(function(result){
     		expect(result).toEqual(updateResult.OperationResult);
     	})
     	.finally(done);
 
-    	$httpBackend.expectPUT(wsapiUrl + '/defect/123?fetch=ObjectID,Name&workspace=%2Fworkspace%2F1234', { defect: {foo: 'bar'}, fizz: 'buzz'})
+    	$httpBackend.expectPUT(wsapiUrl + '/defect/123?fetch=ObjectID,Name', { defect: {foo: 'bar'} })
         .respond(updateResult);
 
         $httpBackend.flush();

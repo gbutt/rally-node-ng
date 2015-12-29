@@ -9,6 +9,9 @@
     }
   ],
   "main": "index.js",
+  "scripts": {
+    "start": "gulp build && node examples-app.js"
+  },
   "dependencies": {
     "angular": "^1.4.8"
   },
@@ -16,14 +19,22 @@
     "angular-mocks": "^1.4.8",
     "browserify": "^12.0.1",
     "browserify-shim": "^3.8.11",
+    "del": "^2.2.0",
+    "express": "^4.13.3",
     "gulp": "^3.9.0",
     "gulp-browserify": "^0.5.1",
+    "gulp-concat": "^2.6.0",
+    "gulp-jshint": "^2.0.0",
+    "gulp-sourcemaps": "^1.6.0",
     "gulp-uglify": "^1.5.1",
     "jasmine-core": "^2.3.4",
+    "jshint": "^2.8.0",
+    "jshint-stylish": "^2.1.0",
     "karma": "^0.13.15",
     "karma-browserify": "^4.4.1",
     "karma-jasmine": "^0.3.6",
     "karma-phantomjs-launcher": "^0.2.1",
+    "open": "0.0.5",
     "phantomjs": "^1.9.19",
     "should": "^8.0.2",
     "vinyl-buffer": "^1.0.0",

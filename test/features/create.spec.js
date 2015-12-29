@@ -1,3 +1,4 @@
+require('angular');
 var rallyNg = require('../..'),
 	ngRequest = require('ngRequest'),
     _ = require('lodash');
@@ -34,21 +35,19 @@ describe('#create', function(){
     }));
 
     it('should call the create endpoint', function(done){
-
-    	var options = {
-    		type: 'defect',
-    		data: {foo: 'bar'},
-    		scope: {workspace: '/workspace/1234'},
-    		fetch: ['ObjectID','Name'],
-    		requestOptions: { data: { fizz: 'buzz' }}
-    	}
-    	rallyClient.create(options)
+        var data = {
+            foo: 'bar'
+        };
+        var params = { 
+            fetch: ['ObjectID','Name'].join(',') 
+        };
+    	rallyClient.create('defect', data, params)
     	.then(function(result){
     		expect(result).toEqual(createResult.CreateResult);
     	})
     	.finally(done);
 
-    	$httpBackend.expectPOST(wsapiUrl + '/defect/create?fetch=ObjectID,Name&workspace=%2Fworkspace%2F1234', { defect: {foo: 'bar'}, fizz: 'buzz'})
+    	$httpBackend.expectPOST(wsapiUrl + '/defect/create?fetch=ObjectID,Name', { defect: {foo: 'bar'} })
         .respond(createResult);
 
         $httpBackend.flush();

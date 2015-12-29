@@ -1,72 +1,56 @@
-var format = require('util').format,
-    _ = require('lodash'),
-    pkgInfo = require('../package.json');
+(function(){ 'use strict';
+
+
+var format = require('./internal/formatString'),
+    isObject = require('./internal/isObject');
 
 var defaultServer = 'https://rally1.rallydev.com',
     defaultApiVersion = 'v2.0';
 
+/**
+ An angularized http backend with support for Rally REST API
+ @param {angular.$http} $http - the angular $http service
+ @param {angular.$q} $q - the angular $q service
+ @param {object} options - the ngRallyConfig constant
+ @constructor
+ */
 function NgRequest($http, $q, options){
+
+    function setDefaultOptions(options) {
+        return angular.merge({
+            server: defaultServer,
+            apiVersion: defaultApiVersion,
+
+        }, options);
+    }
+
+    function setAuthOptions(options, $http) {
+        if(options.apiKey) {
+            $http.defaults.headers.common.zsessionid = options.apiKey;
+        } else if (options.basicAuthorization) {
+            $http.defaults.headers.common.Authorization = 
+                'Basic ' + options.basicAuthorization;
+            $http.defaults.withCredentials = true;
+        }
+    }
+    
     options = setDefaultOptions(options);
-    options = setAuthOptions(options);	
-	$http.defaults = options.http.defaults;
-    this.wsapiUrl = format('%s/slm/webservice/%s', options.server, options.apiVersion);
-    this.schemaUrl = format('%s/slm/schema/%s', options.server, options.apiVersion);
+    setAuthOptions(options, $http);
+    this.wsapiUrl = format('{0}/slm/webservice/{1}', options.server, options.apiVersion);
+    this.schemaUrl = format('{0}/slm/schema/{1}', options.server, options.apiVersion);
     this._hasKey = options.apiKey !== undefined;
     this.http = $http;
     this.Q = $q;
 }
 
-function setDefaultOptions(options) {
-    return _.merge({
-        server: defaultServer,
-        apiVersion: defaultApiVersion,
-        http: {
-            defaults: {
-                headers: {
-                    common: {
-                        'X-RallyIntegrationLibrary': format('%s v%s', pkgInfo.description, pkgInfo.version),
-                        'X-RallyIntegrationName': pkgInfo.description,
-                        'X-RallyIntegrationVendor': 'Rally Software, Inc.',
-                        'X-RallyIntegrationVersion': pkgInfo.version,
-                        'Content-Type': 'application/json',
-                        'Accept-Encoding': 'gzip',
-                    },
-                },
-            },
-        },
-    }, options);
-}
-
-function setAuthOptions(options) {
-    options.apiKey = options.apiKey || process.env.RALLY_API_KEY;
-    if(options.apiKey) {
-        var authOptions = {
-            http: {
-                defaults: {
-                    headers: {
-                        common: {
-                            zsessionid: options.apiKey,
-                        },
-                    },
-                },
-            },
-        };
-    } else {
-        var auth = new Buffer(format('%s:%s', options.username, options.password)).toString('base64');
-        var authOptions = {
-            http: {
-                defaults: {
-                    withCredentials: true,
-                    headers: {
-                        common: {
-                            Authorization: 'Basic ' + auth,
-                        },
-                    },
-                },
-            },
-        };
+function valueOfFirstProperty(object) {
+    var prop;
+    for (prop in object) {
+        if (object.hasOwnProperty(prop)) { 
+            break; 
+        }
     }
-    return _.merge(authOptions, options);
+    return object[prop];
 }
 
 NgRequest.prototype.doSecuredRequest = function(method, options) {
@@ -77,10 +61,25 @@ NgRequest.prototype.doSecuredRequest = function(method, options) {
 
     return this.doRequest('get', {url: '/security/authorize', cache: true})
         .then(function(result) {
+            var requestConfig;
             if (method === 'get' || method === 'delete') {
-                var requestConfig = _.merge(options, {params: {key: result.SecurityToken}});
+                requestConfig = angular.merge({},
+                    options, 
+                    {
+                        params: {
+                            key: result.SecurityToken
+                        }
+                    }
+                );
             } else {
-                var requestConfig = _.merge(options, {data: {key: result.SecurityToken}});
+                requestConfig = angular.merge({},
+                    options, 
+                    {
+                        data: {
+                            key: result.SecurityToken
+                        }
+                    }
+                );
             }
         	return self.doRequest(method, requestConfig);
         });
@@ -88,14 +87,24 @@ NgRequest.prototype.doSecuredRequest = function(method, options) {
 
 NgRequest.prototype.doRequest = function(method, options) {
 	var self = this;
-	var	requestUrl = (options.url.substring(0,4) === 'http') ? options.url : this.wsapiUrl+options.url;
-    var requestConfig = _.merge(options, {method: method, url: requestUrl});
+	var	requestUrl = (options.url.substring(0,4) === 'http') ? 
+        options.url : this.wsapiUrl+options.url;
+        
+    var requestConfig = angular.merge({},
+        options, 
+        {
+            method: method, 
+            url: requestUrl
+        }
+    );
 	return this.http(requestConfig)
         .then(function(response){
     		var err;
-    		var result = _.values(response.data)[0];
-    		if (!result || !_.isObject(result)) {
-                err = format('%s: %s! body=%s', options.url, response.status, result);
+    		var result = valueOfFirstProperty(response.data);
+    		if (!result || !isObject(result)) {
+                err = format('{0}: {1}! body={2}', 
+                    requestConfig.url, response.status, result
+                );
             } else {
                 if (result.Errors && result.Errors.length) {
                     err = result.Errors;
@@ -105,9 +114,11 @@ NgRequest.prototype.doRequest = function(method, options) {
             }
             return self.Q.reject(err);
     	}).catch(function(err){
-            if (!_.isArray(err)){
+            if (!Array.isArray(err)){
                 if (err.status && err.status !== 200) {
-                    err = format('%s: %s! body=%s', options.url, err.status, err.data);
+                    err = format('{0}: {1}! body={2}', 
+                        requestConfig.url, err.status, err.data
+                    );
                 }
                 err = [err];
             }
@@ -132,3 +143,5 @@ NgRequest.prototype.del = function(options) {
 };
 
 module.exports = NgRequest;
+
+})();

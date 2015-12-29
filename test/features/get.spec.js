@@ -1,3 +1,4 @@
+require('angular');
 var rallyNg = require('../..'),
 	ngRequest = require('ngRequest'),
     _ = require('lodash');
@@ -39,44 +40,19 @@ describe('#get', function(){
     }));
 
     it('should call the get endpoint', function(done){
-
-    	var options = {
-            ref: '/defect/48861896406',
-            scope: {workspace: '/workspace/1234'},
-            fetch: ['Description','Name','ObjectID'],
-            requestOptions: {
-                params: {foo: 'bar'}
-            }
+        var params = { 
+            fetch: ['Description','Name','ObjectID'].join(',') 
         };
-    	rallyClient.get(options)
+    	rallyClient.get('/defect/48861896406', params)
     	.then(function(result){
     		expect(result).toEqual(getResult.Defect);
     	})
     	.finally(done);
 
-    	$httpBackend.expectGET(wsapiUrl + '/defect/48861896406?fetch=Description,Name,ObjectID&foo=bar&workspace=%2Fworkspace%2F1234')
+    	$httpBackend.expectGET(wsapiUrl + '/defect/48861896406?fetch=Description,Name,ObjectID')
         .respond(getResult);
 
         $httpBackend.flush();
     });
-
-    it('should allow simple get', function(done){
-
-        var options = {
-            ref: '/defect/48861896406',
-            scope: {workspace: '/workspace/1234'}
-        };
-        rallyClient.get(options)
-        .then(function(result){
-            expect(result).toEqual(getResult.Defect);
-        })
-        .finally(done);
-
-        $httpBackend.expectGET(wsapiUrl + '/defect/48861896406?workspace=%2Fworkspace%2F1234')
-        .respond(getResult);
-
-        $httpBackend.flush();
-    });
-
 
 });

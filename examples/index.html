@@ -1,0 +1,31 @@
+<html lang="en" ng-app="myApp">
+<head>  
+	<meta charset="utf-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1"/>
+	<title>RallyNg Examples</title>
+
+</head>  
+<body ng-cloak>
+
+	<div class="view-container">
+		<my-app-crud></my-app-crud>
+	</div>
+
+	<!-- dependencies -->
+	<script src="/node_modules/angular/angular.js"></script>
+
+	<!-- Api key is separate from the config in this example for version control reasons.
+	You can create this file for yourself with something like: var apiKey = 'myKey'; 
+	To generate an api key go to https://rally1.rallydev.com/login -->
+	<script src="apiKey.js"></script> 
+
+	<!-- rallyNg config - load this before the service -->
+	<script src="config.js"></script>
+	<!-- rallyNg service -->
+	<script src="/dist/rallyNg.min.js"></script>
+
+	<!-- application -->
+	<script src="crud.js"></script>
+
+</body>  
+</html>

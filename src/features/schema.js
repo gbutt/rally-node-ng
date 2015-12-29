@@ -1,54 +1,48 @@
-var _ = require('lodash'),
-    optionsToRequestOptions = require('./internal/optionsToRequestOptions');
+(function(){ 'use strict'; 
 
 /**
  Get the workspace schema
  @param {object} workspace - The workspace object
  - @member {string} ObjectID
  - @member {object} SchemaVersion
- @param {function} callback - A callback to be called when the operation completes
- - @param {string[]} errors - Any errors which occurred
- - @param {object} result - the operation result
  @return {promise}
  */
-function schema(workspace) {
+var schema = function(workspace) {
     var self = this;
-    // fetch workspace if null or invalid - we need the OID and SchemaVersion
-    workspace = workspace || {};
-    if (!workspace.ObjectID || !workspace.SchemaVersion) {
-        var promise = getWorkspace.call(self, workspace.ObjectID)
-            .then(function(workspace){
-                return getSchema.call(self,workspace);
-            });
-    } else {
-        var promise = getSchema.call(self, workspace);
-    }
-    return promise;
 
     function getWorkspace(ObjectID) {
-         var options = {
-                fetch: 'ObjectID,SchemaVersion',
-                limit: 1,
-                requestOptions: { cache: true }
-            };
+            var ref;
             if (ObjectID) {
-                options.ref = '/workspace/'+ObjectID;
+                ref = '/workspace/'+ObjectID;
             } else {
-                options.type = 'workspace';
+                ref = '/workspace';
             }
-            return this.query(options).then(function(result) {
+            return self.get(ref, { fetch: 'ObjectID,SchemaVersion' }, { cache: true })
+            .then(function(result) {
                 return result.Results[0];
             });
     }
 
     function getSchema(workspace) {
-        var url = this.request.schemaUrl+'/workspace/'+workspace.ObjectID+'/'+workspace.SchemaVersion
-        return this.request.get({url: url, cache: true});
+        var url = self.request.schemaUrl+
+            '/workspace/'+workspace.ObjectID+'/'+workspace.SchemaVersion;
+        return self.httpGet({url: url, cache: true});
     }
-}
-
-
-
-
+    
+    // fetch workspace if null or invalid - we need the OID and SchemaVersion
+    workspace = workspace || {};
+    var promise;
+    if (!workspace.ObjectID || !workspace.SchemaVersion) {
+        promise = getWorkspace(workspace.ObjectID)
+            .then(function(workspace){
+                return getSchema(workspace);
+            });
+    } else {
+        promise = getSchema(workspace);
+    }
+    return promise;
+};
 
 module.exports = schema;
+
+})();

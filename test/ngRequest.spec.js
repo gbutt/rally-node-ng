@@ -56,61 +56,20 @@ describe('NgRequest', function() {
             expect(request.Q).toBeDefined();
         });
 
-        it('should pass headers through', function() {
-            var request = createRequest({
-                http: {
-                    defaults: {
-                        headers: {
-                            common: {
-                                foo: 'bar', 
-                                fizz: 'buzz'
-                            }
-                        }
-                    }
-                }
-            });
-            expect(request.http.defaults.headers.common.foo).toEqual('bar');
-            expect(request.http.defaults.headers.common.fizz).toEqual('buzz');
-        });
-
         it('should construct Auth header', function() {
-            var auth = new Buffer('username:password').toString('base64');
             var request = createRequest({ 
-                username: 'username', 
-                password: 'password'
+                basicAuthorization: 'username:password'
             });
-            expect(request.http.defaults.headers.common.Authorization).toEqual('Basic ' + auth);
+            expect(request.http.defaults.headers.common.Authorization).toEqual('Basic ' + 'username:password');
             expect(request._hasKey).toEqual(false);
         });
 
         it('should not construct Auth header is api key provided', function() {
-            var auth = new Buffer('username:password').toString('base64');
             var request = createRequest({ 
                 apiKey: 'abc'
             });
             expect(request.http.defaults.headers.common.Authorization).not.toBeDefined();
             expect(request._hasKey).toEqual(true);
-        });
-
-        it('should have json content type header', function() {
-            var request = createRequest({ requestOptions: {
-                json: true
-            }});
-            expect(request.http.defaults.headers.common['Content-Type']).toEqual('application/json');
-        });
-
-        it('should have gzip accept encoding header', function() {
-            var request = createRequest({ requestOptions: {
-                gzip: true
-            }});
-            expect(request.http.defaults.headers.common['Accept-Encoding']).toEqual('gzip');
-        });
-
-        it('should have withCredentials when cookie jar required', function() {
-            var request = createRequest({ requestOptions: {
-                jar: true
-            }});
-            expect(request.http.defaults.withCredentials).toEqual(true);
         });
     });
 

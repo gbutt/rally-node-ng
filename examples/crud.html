@@ -1,0 +1,17 @@
+<p>CRUD</p>
+<a href="https://rally1.rallydev.com/slm/doc/webservice/">WSAPI Documentation</a><br />
+<a href="https://help.rallydev.com/search/help?gcse=wsapi">WSAPI Help</a><br />
+<a href="https://rallycommunity.rallydev.com/">Community Support</a><br />
+
+<pre>{{vm.pretty(lastOperationResult);}}</pre>
+
+<input type='button' ng-click='vm.create();' value='Create'>
+<input type='button' ng-click='vm.read();' value='Read'>
+<input type='button' ng-click='vm.update();' value='Update'>
+<input type='button' ng-click='vm.del();' value='Delete'>
+
+<div>
+	<input type='button' ng-click='vm.getUserInfo();' value='User Info'>
+	Logged in as: {{username}}
+</div>
+
