@@ -17,7 +17,7 @@ var get = function(ref, params, options) {
 		},
         options
     );
-    return this.request.get(requestConfig);
+    return this.httpGet(requestConfig);
 };
 
 module.exports = get;
